@@ -94,7 +94,7 @@ function servePages(request, response) {
          response.end();
     }
     else{
-        response.writeHead(200, {'Content-Type': 'application/json','Etag': cache.hash});
+        response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8','Etag': cache.hash});
         response.write(cache.json);
         response.end();
     }    
