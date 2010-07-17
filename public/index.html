@@ -9,8 +9,8 @@
   <!-- HTML template -->
   <table id="courtlist">
     <tbody>
-        <tr class="location">
-            <td id="location">
+        <tr class="area">
+            <td id="area">
             </td>
             <td>
                <table>
@@ -39,10 +39,10 @@
   </table>
 
 <script>
-var courts_directive = {
-  'tr.location':{
-    'location<-locations':{
-      'td#location':'location.location',
+var directive = {
+  'tr.area':{
+    'area<-areas':{
+      'td#area':'area.area',
       'tr.court':{
           'court<-location.courts':{
               'td.courtnumber':'court.CourtNumber'
@@ -57,19 +57,7 @@ $.ajax({
             dataType    : 'jsonp',
             ifModified  : true,
             success     : function(data){
-                                            var shaped = {
-                                                            locations : _(data.results).chain()
-                                                                        .pluck('Court').uniq()
-                                                                        .map(function(location){
-                                                                            return {
-                                                                                        location    : location,
-                                                                                        courts      : _(data.results).filter(function(court){
-                                                                                                            return court.Court == location;
-                                                                                                      })
-                                                                                    }
-                                                                        }).value()
-                                                            };
-                                            $('table#courtlist').render(shaped, courts_directive);
+                                            $('table#courtlist').render(data.results, directive);
                                         }
         });
 </script>

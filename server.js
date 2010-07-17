@@ -45,41 +45,39 @@ function getHTML(url_fragment,callback){
 
 //Yuck! JSON Transform Language required!
 function treeify(data){
-     return {
-                results : _(data).chain()
-                                 .pluck('area').uniq()
-                                 .map(function(area){
-                                    return{
-                                            area      : area,
-                                            locations : _(data).chain()
-                                                               .filter(function(item){
-                                                                    return item.area == area;
-                                                                })
-                                                                .pluck('location').uniq()
-                                                                .map(function(location){
-                                                                    return{
-                                                                        location : location,
-                                                                        courts   : _(data).chain()
-                                                                                          .filter(function(item){
-                                                                                              return item.location == location;
-                                                                                          })
-                                                                                          .map(function(court){
-                                                                                              return {
-                                                                                                        court           : court.court,
-                                                                                                        caseNumber      : court.caseNumber,
-                                                                                                        name            : court.name,
-                                                                                                        currentStatus   : court.currentStatus,
-                                                                                                        updated         : court.updated
-                                                                                              }
-                                                                                          })
-                                                                                          .value()
-                                                                    } 
-                                                                })
-                                                                .value()
-                                                                    
-                                                }
-                                    }).value()
-                };
+     return   _(data).chain()
+                     .pluck('area').uniq()
+                     .map(function(area){
+                        return{
+                                area      : area,
+                                locations : _(data).chain()
+                                                   .filter(function(item){
+                                                        return item.area == area;
+                                                    })
+                                                    .pluck('location').uniq()
+                                                    .map(function(location){
+                                                        return{
+                                                            location : location,
+                                                            courts   : _(data).chain()
+                                                                              .filter(function(item){
+                                                                                  return item.location == location;
+                                                                              })
+                                                                              .map(function(court){
+                                                                                  return {
+                                                                                            court           : court.court,
+                                                                                            caseNumber      : court.caseNumber,
+                                                                                            name            : court.name,
+                                                                                            currentStatus   : court.currentStatus,
+                                                                                            updated         : court.updated
+                                                                                  }
+                                                                              })
+                                                                              .value()
+                                                        } 
+                                                    })
+                                                    .value()
+                                                        
+                                    }
+                        }).value()
 }
 
 function getHearings(callback){
