@@ -4,7 +4,8 @@ var sys = require("sys"),
     htmlparser = require("./lib/node-htmlparser"),
     doc =  require("./lib/jsdom/lib/jsdom/browser").windowAugmentation(dom, {parser: htmlparser}).document,
     sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    url = require('url');
 
 require('./lib/underscore');
 
@@ -95,7 +96,14 @@ function servePages(request, response) {
     }
     else{
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8','Etag': cache.hash});
-        response.write(cache.json);
+        var queryString = url.parse(request.url, true);
+        if (queryString.query && queryString.query.callback){
+            response.write(queryString.query.callback+'('+cache.json+')');
+        }
+        else
+        {
+            response.write(cache.json);
+        }
         response.end();
     }    
 }

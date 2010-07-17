@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>PURE Unobtrusive Rendering Engine</title>
+  <title>Cause List</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="http://causelist.org/js/pure.js"></script>
 </head>
@@ -26,7 +26,8 @@ var directive = {
     }
   }
 };
-    $.getJSON('http://causelist.org/data?callback=cb',function(data){
+
+    $.getJSON('',function(data){
         // note the use of render instead of autoRender, and the 2nd argument
         $('ul').render(data, directive);
     })
