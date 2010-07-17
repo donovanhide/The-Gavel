@@ -1,155 +1,90 @@
-var http = require('http');
-XRegExp = require('./xregexp').XRegExp;
-// var browser = require('./jsdom/lib/jsdom/browser');
-// var dom = browser.browserAugmentation(require("../../lib/jsdom/level1/core").dom.level1.core);
-// var sizzle = require('./sizzle').sizzle;
+var sys = require("sys"), 
+    http = require('http'),
+    dom = require("./lib/jsdom/lib/jsdom/level1/core").dom.level1.core,
+    htmlparser = require("./lib/node-htmlparser"),
+    doc =  require("./lib/jsdom/lib/jsdom/browser").windowAugmentation(dom, {parser: htmlparser}).document,
+    sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc);
 
-var small_pages = ["aylesbury.htm",
-"barnstaple.htm",
-"barrow-in-furness.htm",
-"basildon.htm",
-"birmingham.htm",
-"blackfriars.htm"
-];
+require('./lib/underscore');
 
-var pages = ["aylesbury.htm",
-"barnstaple.htm",
-"barrow-in-furness.htm",
-"basildon.htm",
-"birmingham.htm",
-"blackfriars.htm",
-"bolton.htm",
-"bournemouth.htm",
-"bradford.htm",
-"lewes.htm",
-"bristol.htm",
-"burnley.htm",
-"bolton.htm",
-"bury_st_edmunds.htm",
-"caernarfon.htm",
-"cambridge.htm",
-"canterbury.htm",
-"cardiff.htm",
-"carlisle.htm",
-"carmarthen.htm",
-"centralcriminalcourt.htm",
-"chelmsford.htm",
-"chester.htm",
-"chichester.htm",
-"coventry.htm",
-"croydon.htm",
-"derby.htm",
-"dolgellau.htm",
-"doncaster.htm",
-"dorchester.htm",
-"durham.htm",
-"exeter.htm",
-"gloucester.htm",
-"greatgrimsby.htm",
-"guildford.htm",
-"harrow.htm",
-"haverfordwest.htm",
-"hereford.htm",
-"lewes.htm",
-"peterborough.htm",
-"innerlondon.htm",
-"ipswich.htm",
-"isleworth.htm",
-"kings_lynn.htm",
-"kingston-upon-hull.htm",
-"kingston-upon-thames.htm",
-"knutsford.htm",
-"lancaster.htm",
-"leeds.htm",
-"leicester.htm",
-"lewes.htm",
-"lincoln.htm",
-"liverpool.htm",
-"luton.htm",
-"maidstone.htm",
-"manchestercrownsquare.htm",
-"manchesterminshullst.htm",
-"merthyrtydfil.htm",
-"mold.htm",
-"newcastle-upon-tyne.htm",
-"newcastle-upon-tyne.htm",
-"newport_crown_court.htm",
-"newportiow.htm",
-"northampton.htm",
-"norwich.htm",
-"nottingham.htm",
-"oxford.htm",
-"peterborough.htm",
-"plymouth.htm",
-"portsmouth.htm",
-"preston.htm",
-"preston.htm",
-"reading.htm",
-"salisbury.htm",
-"sheffield.htm",
-"shrewsbury.htm",
-"snaresbrook.htm",
-"southampton.htm",
-"southend.htm",
-"southwark.htm",
-"stalbans.htm",
-"stafford.htm",
-"manchesterminshullst.htm",
-"stoke-on-trent.htm",
-"swansea.htm",
-"swindon.htm",
-"taunton.htm",
-"teesside.htm",
-"truro.htm",
-"warrington.htm",
-"warwick.htm",
-"wolverhampton.htm",
-"winchester.htm",
-"wolverhampton.htm",
-"woodgreen.htm",
-"woolwich.htm",
-"worcester.htm",
-"york.htm"];
+function isEmptyString(string){
+    return string!='';
+};
 
-http.createServer(function (request, response) {
-    var courts = http.createClient(80, 'www.hmcourts-service.gov.uk');
-    var base_url = "/onlineservices/xhibit/";
-    var data = [];
-    var count=0;
-    var case_closed=0;
-    var courts_count = 0;
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    for (var i = 0;i<pages.length;i++){
-        var page = pages[i];
-        var courts_request = courts.request('GET', base_url+page,{'host': 'www.hmcourts-service.gov.uk'});
-        courts_request.end();
-        courts_request.addListener('response', function (courts_response) {
-        var html;
-        courts_response.addListener('data', function (chunk) {
+function stripWhitespace(string){
+    return string.replace(/^\s+|\s+$/g,'');
+};
+
+function stripHTML(string){
+    return string.replace(/<.*?>/g,'');
+};
+
+function cleanMultipleCell(cell){
+     return cell.text.split(/<br>|-/).map(stripHTML).map(stripWhitespace).filter(isEmptyString);
+};
+
+function cleanSingleCell(cell){
+     return stripHTML(stripWhitespace(cell.text));
+}
+
+function getHTML(url_fragment,callback){
+    request = client.request('GET','/onlineservices/xhibit/'+url_fragment,{'host': 'www.hmcourts-service.gov.uk'});
+    request.end();
+    var html;
+    request.addListener('response',function(response){
+        response.addListener('data', function (chunk) {
             html += String(chunk);            
         });
-        courts_response.addListener('end', function(){
-             // response.write(html);
-             matches=[];
-             XRegExp.iterate(html, XRegExp('<td align="center">(?<row>.*)</td>',"mg"), function (match,index) {
-                if (match.row.indexOf('Case Closed')!=-1){
-                    case_closed = case_closed+1;
-                }
-                courts_count=courts_count+1;
-                matches.push(match.row);
-             });
-             for (var r=0;r<matches.length;r=r+2){
-                 // response.write(matches[r]+','+matches[r+1]+'\n');
-             }
-             count=count+1;
-             if (count==pages.length){
-                 response.write(String(case_closed)+'/'+String(courts_count)+'\n');
-                 response.end();    
-             }
-        });
-    });
-};
-}).listen(8124);
+        response.addListener('end',function(){
+            callback(html);
+        })
+    })
+}
 
-console.log('Server running at http://127.0.0.1:8124/');
+function servePages(request, response) {
+    var count=0;
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    var data = [];  
+    for (var i = 0;i<pages.length;i++){
+        getHTML(pages[i],function(html){       
+               doc.innerHTML = html;
+                count=count+1;
+                var rows = sizzle('div#content tr');
+                var court = cleanSingleCell(sizzle('div#content h2')[0]);
+                var updated = cleanSingleCell(sizzle('div#content p')[0]);
+                for(var i=0; i< rows.length; i++){
+                    var cells = sizzle('td',rows[i]);
+                    if (cells.length>0){
+                        data.push({
+                                      Court            : court,
+                                      Updated          : updated,
+                                      CourtNumber      : cleanSingleCell(cells[0]),
+                                      CaseNumber       : cleanMultipleCell(cells[1]),
+                                      Name             : cleanMultipleCell(cells[2]),
+                                      CurrentStatus    : cleanMultipleCell(cells[3])
+                                  });
+                    };
+                    if (count==pages.length){
+                         response.write(JSON.stringify(data,null,'\t'));
+                         response.end();    
+                     };
+                 };
+             });
+         };
+}
+
+
+var client = http.createClient(80, 'www.hmcourts-service.gov.uk');
+var pages = [];
+
+getHTML('court_lists.htm',function(html){
+    doc.innerHTML = html;
+    var links = sizzle('div#content a[href$=htm]:not(a[href^=..])');
+    for (var i=0;i<links.length;i++){
+        pages.push(links[i].href);  
+    }
+    pages = _.uniq(pages);
+    http.createServer(servePages).listen(8124);
+    console.log('Server running at on port 8124');
+})
 
