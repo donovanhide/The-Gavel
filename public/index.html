@@ -53,7 +53,7 @@ var courts_directive = {
 };
 
 $.ajax({
-            url         : 'http://causelist.org/data?callback=?',
+            url         : 'http://causelist.org/data/tree?format=tree&callback=?',
             dataType    : 'jsonp',
             ifModified  : true,
             success     : function(data){

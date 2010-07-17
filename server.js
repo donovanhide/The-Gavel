@@ -152,7 +152,7 @@ function servePages(request, response) {
     else{
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8','Etag': cache.hash});
         var queryString = url.parse(request.url, true);
-        var result = (queryString.pathname.indexOf('tree')!=-1)?cache.tree:cache.flat;
+        var result = (queryString.query && queryString.query.format == 'tree')?cache.tree:cache.flat;
         if (queryString.query && queryString.query.callback){
             response.write(queryString.query.callback+'('+result+')');
         }
