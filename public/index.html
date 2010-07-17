@@ -3,34 +3,58 @@
   <title>Cause List</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="http://causelist.org/js/pure.js"></script>
+  <script src="http://causelist.org/js/underscore.js"></script>
 </head>
 <body>
   <!-- HTML template -->
-  <ul>
-
-    <li></li>
-  </ul>
+  <table id="courtlist">
+    <tbody>
+        <tr class="court">
+            <td id="court">
+            </td>
+            <td>
+               <table>
+                   <thead>
+                        <tr>
+                            <th>Court Number</th>
+                            <th>Court Code</th>
+                            <th>Case Number(s)</th>
+                            <th>Names(s)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="courtnumber"></td>
+                            <td class="courtcode"></td>
+                            <td class="casenumber"></td>
+                            <td class="names"></td>
+                            <td class="status"></td>
+                        </tr>
+                    </tbody>
+                </table> 
+            </td>
+        </tr>
+    </tbody>
+  </table>
 
 <script>
-//declaration of the actions PURE has to do
 var directive = {
-  'li':{
-    'animal<-animals':{
-      '.':'animal.name'
-    },
-    sort:function(a, b){
-      return a.name > b.name ? 1 : -1;
-    },
-    filter:function(a){
-      return a.context.legs === a.item.legs;
+  'tr.court':{
+    'result<-results':{
+      'td#court':'result.Court'
     }
   }
 };
 
-    $.getJSON('',function(data){
-        // note the use of render instead of autoRender, and the 2nd argument
-        $('ul').render(data, directive);
-    })
+$.ajax({
+            url         : 'http://causelist.org/data?callback=?',
+            dataType    : 'jsonp',
+            ifModified  : true,
+            success     : function(data){
+                                        $('table#courtlist').render(data.results., directive);
+                                    }
+        });
 </script>
 </body>
 </html>
