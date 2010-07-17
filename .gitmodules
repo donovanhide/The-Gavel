@@ -1,3 +1,6 @@
 [submodule "lib/jsdom"]
 	path = lib/jsdom
 	url = http://github.com/tmpvar/jsdom.git
+[submodule "lib/connect"]
+	path = lib/connect
+	url = http://github.com/senchalabs/connect.git

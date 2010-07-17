@@ -3,7 +3,8 @@ var sys = require("sys"),
     dom = require("./lib/jsdom/lib/jsdom/level1/core").dom.level1.core,
     htmlparser = require("./lib/node-htmlparser"),
     doc =  require("./lib/jsdom/lib/jsdom/browser").windowAugmentation(dom, {parser: htmlparser}).document,
-    sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc);
+    sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc),
+    crypto = require('crypto');
 
 require('./lib/underscore');
 
@@ -25,7 +26,7 @@ function cleanMultipleCell(cell){
 
 function cleanSingleCell(cell){
      return stripHTML(stripWhitespace(cell.text));
-}
+};
 
 function getHTML(url_fragment,callback){
     request = client.request('GET','/onlineservices/xhibit/'+url_fragment,{'host': 'www.hmcourts-service.gov.uk'});
@@ -41,14 +42,15 @@ function getHTML(url_fragment,callback){
     })
 }
 
-function servePages(request, response) {
+function getHearings(callback){
+    console.log('getting hearings from '+pages.length+' pages');
     var count=0;
-    response.writeHead(200, {'Content-Type': 'text/plain'});
     var data = [];  
     for (var i = 0;i<pages.length;i++){
         getHTML(pages[i],function(html){       
-               doc.innerHTML = html;
+                doc.innerHTML = html;
                 count=count+1;
+                sys.puts(count);
                 var rows = sizzle('div#content tr');
                 var court = cleanSingleCell(sizzle('div#content h2')[0]);
                 var updated = cleanSingleCell(sizzle('div#content p')[0]);
@@ -64,27 +66,56 @@ function servePages(request, response) {
                                       CurrentStatus    : cleanMultipleCell(cells[3])
                                   });
                     };
-                    if (count==pages.length){
-                         response.write(JSON.stringify(data,null,'\t'));
-                         response.end();    
-                     };
                  };
+                 if (count==pages.length){
+                      var json = JSON.stringify({
+                                                    scraped : new Date(),
+                                                    count   : data.length,
+                                                    hash    : crypto.createHash('md5').update(String(data)).digest('hex'),
+                                                    results : data
+                                                  },null,'\t');
+                      cache = {
+                                    json:    json,
+                                    hash:    crypto.createHash('md5').update(json).digest('hex')
+                                };
+                      console.log('cache (re)created with hash: '+cache.hash);
+                      setTimeout(getHearings,60*1000);
+                      if (callback){
+                          callback()
+                      }
+                  };
              });
          };
+}
+
+function servePages(request, response) {
+    if(request.headers['if-none-match'] == cache.hash){
+         response.writeHead(304, {'Content-Type': 'application/json'});
+         response.end();
+    }
+    else{
+        response.writeHead(200, {'Content-Type': 'application/json','Etag': cache.hash});
+        response.write(cache.json);
+        response.end();
+    }    
 }
 
 
 var client = http.createClient(80, 'www.hmcourts-service.gov.uk');
 var pages = [];
+var cache = {};
 
 getHTML('court_lists.htm',function(html){
+    console.log('getting courts');
     doc.innerHTML = html;
     var links = sizzle('div#content a[href$=htm]:not(a[href^=..])');
     for (var i=0;i<links.length;i++){
         pages.push(links[i].href);  
     }
     pages = _.uniq(pages);
-    http.createServer(servePages).listen(8124);
-    console.log('Server running at on port 8124');
+    getHearings(function(){
+        http.createServer(servePages).listen(8224);
+        console.log('Server running on port 8224'); 
+    });  
 })
 
