@@ -43,41 +43,96 @@ function getHTML(url_fragment,callback){
     })
 }
 
+//Yuck! JSON Transform Language required!
+function treeify(data){
+     return {
+                results : _(data).chain()
+                                 .pluck('area').uniq()
+                                 .map(function(area){
+                                    return{
+                                            area      : area,
+                                            locations : _(data).chain()
+                                                               .filter(function(item){
+                                                                    return item.area == area;
+                                                                })
+                                                                .pluck('location').uniq()
+                                                                .map(function(location){
+                                                                    return{
+                                                                        location : location,
+                                                                        courts   : _(data).chain()
+                                                                                          .filter(function(item){
+                                                                                              return item.location == location;
+                                                                                          })
+                                                                                          .map(function(court){
+                                                                                              return {
+                                                                                                        court           : court.court,
+                                                                                                        caseNumber      : court.caseNumber,
+                                                                                                        name            : court.name,
+                                                                                                        currentStatus   : court.currentStatus,
+                                                                                                        updated         : court.updated
+                                                                                              }
+                                                                                          })
+                                                                                          .value()
+                                                                    } 
+                                                                })
+                                                                .value()
+                                                                    
+                                                }
+                                    }).value()
+                };
+}
+
 function getHearings(callback){
     console.log('getting hearings from '+pages.length+' pages');
     var count=0;
     var data = [];  
     for (var i = 0;i<pages.length;i++){
-        getHTML(pages[i],function(html){       
+        getHTML(pages[i],function(html){      
+                sys.puts(count);
                 doc.innerHTML = html;
                 count=count+1;
-                sys.puts(count);
-                var rows = sizzle('div#content tr');
-                var court = cleanSingleCell(sizzle('div#content h2')[0]);
                 var updated = cleanSingleCell(sizzle('div#content p')[0]);
-                for(var i=0; i< rows.length; i++){
-                    var cells = sizzle('td',rows[i]);
-                    if (cells.length>0){
-                        data.push({
-                                      Court            : court,
-                                      Updated          : updated,
-                                      CourtNumber      : cleanSingleCell(cells[0]),
-                                      CaseNumber       : cleanMultipleCell(cells[1]),
-                                      Name             : cleanMultipleCell(cells[2]),
-                                      CurrentStatus    : cleanMultipleCell(cells[3])
-                                  });
-                    };
-                 };
+                var areas = sizzle('div#content h2');
+                var area = cleanSingleCell(areas[0]);
+                for (var r=0; r< areas.length;r++){
+                    var location = cleanSingleCell(areas[r]);
+                    var nearest_table = sizzle('~table',areas[r]);
+                    var rows = sizzle('tr',nearest_table[0]);
+                    for(var i=0; i< rows.length; i++){
+                         var cells = sizzle('td',rows[i]);
+                            if (cells.length>0){
+                                data.push({
+                                              area             : area,
+                                              location         : location,
+                                              court            : cleanSingleCell(cells[0]),
+                                              caseNumber       : cleanMultipleCell(cells[1]),
+                                              name             : cleanMultipleCell(cells[2]),
+                                              currentStatus    : cleanMultipleCell(cells[3]),
+                                              updated          : updated
+                                          });
+                            };
+                         };
+                    }
+                   
                  if (count==pages.length){
-                      var json = JSON.stringify({
-                                                    scraped : new Date(),
+                      var hash = crypto.createHash('md5').update(String(data)).digest('hex');
+                      var scraped = new Date();
+                      var flat = JSON.stringify({
+                                                    scraped : scraped,
                                                     count   : data.length,
-                                                    hash    : crypto.createHash('md5').update(String(data)).digest('hex'),
+                                                    hash    : hash,
                                                     results : data
                                                   },null,'\t');
+                      var tree = JSON.stringify({
+                                                    scraped : scraped,
+                                                    count   : data.length,
+                                                    hash    : hash,
+                                                    results : treeify(data)
+                                                  },null,'\t');
                       cache = {
-                                    json:    json,
-                                    hash:    crypto.createHash('md5').update(json).digest('hex')
+                                    flat    : flat,
+                                    tree    : tree,
+                                    hash    : crypto.createHash('md5').update(flat).digest('hex')
                                 };
                       console.log('cache (re)created with hash: '+cache.hash);
                       setTimeout(getHearings,60*1000);
@@ -97,12 +152,13 @@ function servePages(request, response) {
     else{
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8','Etag': cache.hash});
         var queryString = url.parse(request.url, true);
+        var result = (queryString.pathname.indexOf('tree')!=-1)?cache.tree:cache.flat;
         if (queryString.query && queryString.query.callback){
-            response.write(queryString.query.callback+'('+cache.json+')');
+            response.write(queryString.query.callback+'('+result+')');
         }
         else
         {
-            response.write(cache.json);
+            response.write(result);
         }
         response.end();
     }    
