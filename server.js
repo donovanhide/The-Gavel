@@ -114,8 +114,8 @@ getHTML('court_lists.htm',function(html){
     }
     pages = _.uniq(pages);
     getHearings(function(){
-        http.createServer(servePages).listen(8224);
-        console.log('Server running on port 8224'); 
+        http.createServer(servePages).listen(8124);
+        console.log('Server running on port 8124'); 
     });  
 })
 
