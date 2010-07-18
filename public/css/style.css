@@ -1,3 +1,123 @@
+html {
+	color:#555;
+	background: #fefefe;
+}
+
+body {
+	font-family: times, Times New Roman, times-roman, georgia, serif;
+	font-size:16px;
+}
+
+h1 {
+	font-size:56px;
+	letter-spacing:-1px;
+	color:#678197;
+}
+
+h1 span {
+	font-variant:small-caps;
+}
+
+h2 {
+	font-size:18px;
+	font-style:italic;
+	letter-spacing:-1px;
+	color: #555;
+	margin-bottom:21px;
+}
+
+div {
+	width:960px;
+	margin:42px auto;
+	padding:42px;
+}
+
+table {
+	border-bottom:1px solid 1px solid;
+}
+
+td table {
+	border:none;
+}
+
+td table tr td table {
+	border:none;
+}
+
+thead {
+	background:#F7FBFF;
+}
+
+thead tr {
+	border-top:1px solid #aaa;
+}
+
+thead th {
+	color:#678197;
+	font-size:12px;
+	text-transform:uppercase;
+	border-right:1px solid #aaa;
+	padding:4px;
+}
+
+tbody {
+	border:none;
+}
+
+tbody#main {
+	border-bottom:1px solid #aaa;
+}
+
+td.area {
+	color:#678197;
+	background:#F7FBFF;
+	text-align:center;
+	text-transform:uppercase;
+	border-top:1px solid #aaa;
+	border-left:1px solid #aaa;
+}
+
+td.location {
+	color:#678197;
+	background:#F7FBFF;
+	text-align:center;
+	padding:4px;
+	border-right:1px solid #aaa;
+	border-left:1px solid #aaa;
+	border-top:1px solid #aaa;
+
+}
+
+td.location+td {
+	display:none;
+}
+
+tr.court {
+	border-top:1px solid #aaa;
+}
+
+tr.court:hover {
+	background:#fff;
+}
+
+tr.area:hover {
+	background:#f1f1f1!important;
+}
+
+tr.location:hover {
+	color:#000!important;
+}
+
+td.court, td.casenumbers, td.names, td.statuses, td.updated  {
+	font-size:14px;
+	padding:4px;
+	border-right:1px solid #aaa;
+}
+
+td.updated {
+	font-size:12px;
+}
+
 td.area{
     width:50px;
 }
@@ -5,13 +125,13 @@ td.location{
     width:150px;
 }
 td.court{
-    width:100px;
+    width:150px;
 }
 td.casenumbers{
     width:150px;
 }
 td.names{
-    width:150px;
+    width:200px;
 }
 td.statuses{
     width:200px;    

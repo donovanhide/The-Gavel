@@ -1,15 +1,21 @@
-<html>
+<!DOCTYPE html>
+<html dir="ltr" lang="en-GB" xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Cause List</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/js/pure.js"></script>
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.1/build/cssreset/reset-min.css">
-   <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
 <!-- HTML template -->
+<div>
+	
+	<h1>C<span>ause</span> L<span>ist</span></h1>
+	<h2>Track what's going on in the courts of the land, right now.</h2>
+	
   <table id="courtlist">
-    <tbody>
+    <tbody id="main">
         <tr class="area">
             <td class="area">
             </td>
@@ -25,7 +31,7 @@
                                             <tr>
                                                 <th>Court Number</th>
                                                 <th>Case Number(s)</th>
-                                                <th>Names(s)</th>
+                                                <th>Name(s)</th>
                                                 <th>Status</th>
                                                 <th>Updated</th>
                                             </tr>
@@ -72,6 +78,7 @@
         </tr>
     </tbody>
   </table>
+</div><!-- end container -->
 <script>
 var directive = {
   'tr.area':{
