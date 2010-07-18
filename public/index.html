@@ -2,50 +2,105 @@
 <head>
   <title>Cause List</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script src="http://causelist.org/js/pure.js"></script>
-  <script src="http://causelist.org/js/underscore.js"></script>
+  <script src="/js/pure.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.1/build/cssreset/reset-min.css">
 </head>
 <body>
   <!-- HTML template -->
-  <table id="courtlist">
-    <tbody>
-        <tr class="area">
-            <td id="area">
-            </td>
-            <td>
-               <table>
-                   <thead>
-                        <tr>
-                            <th>Court Number</th>
-                            <th>Court Code</th>
-                            <th>Case Number(s)</th>
-                            <th>Names(s)</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="court">
-                            <td class="courtnumber"></td>
-                            <td class="courtcode"></td>
-                            <td class="casenumber"></td>
-                            <td class="names"></td>
-                            <td class="status"></td>
-                        </tr>
-                    </tbody>
-                </table> 
-            </td>
-        </tr>
-    </tbody>
-  </table>
+  <div id="itsthetable">
+          <table id="courtlist">
+            <tbody>
+                <tr class="area">
+                    <td class="area">
+                    </td>
+                    <td>
+                        <table>
+                            <tbody>
+                                <tr class="location">
+                                    <td class="location">
+                                    <td>
+                                     <td>
+                                           <table>
+                                               <thead>
+                                                    <tr>
+                                                        <th>Court Number</th>
+                                                        <th>Court Code</th>
+                                                        <th>Case Number(s)</th>
+                                                        <th>Names(s)</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="court">
+                                                        <td class="court"></td>
+                                                        <td>
+                                                            <table>
+                                                                <tbody>
+                                                                    <tr class="casenumber">
+                                                                        <td class="casenumber"></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                        <td class="names">
+                                                             <table>
+                                                                <tbody>
+                                                                    <tr class="name">
+                                                                        <td class="name"></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                        <td class="status">
+                                                             <table>
+                                                                <tbody>
+                                                                    <tr class="status">
+                                                                        <td class="status"></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table> 
+                                        </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+          </table>
+</div>
 
 <script>
 var directive = {
   'tr.area':{
-    'area<-areas':{
-      'td#area':'area.area',
-      'tr.court':{
-          'court<-location.courts':{
-              'td.courtnumber':'court.CourtNumber'
+    'area<-results':{
+      'td.area':'area.area',
+      'tr.location':{
+          'location<-area.locations':{
+              'td.location':'location.location',
+              'tr.court':{
+                  'court<-location.courts':{
+                      'td.court':'court.court',
+                      'tr.casenumber':{
+                          'caseNumber<-court.caseNumber':{
+                              'td.casenumber':'caseNumber'
+                          }
+                      },
+                      'tr.name':{
+                          'name<-court.name':{
+                              'td.name':'name'
+                          }
+                      },
+                      'tr.status':{
+                          'status<-court.currentStatus':{
+                              'td.status':'status'
+                          }
+                      }
+                  }
+              }
           }
       }      
     }
@@ -57,7 +112,7 @@ $.ajax({
             dataType    : 'jsonp',
             ifModified  : true,
             success     : function(data){
-                                            $('table#courtlist').render(data.results, directive);
+                                            $('table#courtlist').render(data, directive);
                                         }
         });
 </script>
