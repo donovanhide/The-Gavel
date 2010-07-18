@@ -33,23 +33,13 @@ div {
 }
 
 table {
-	border-bottom:1px solid 1px solid;
-}
-
-td table {
 	border:none;
-}
-
-td table tr td table {
-	border:none;
+	border-spacing:0;
+	border-collapse:collapse;
 }
 
 thead {
 	background:#F7FBFF;
-}
-
-thead tr {
-	border-top:1px solid #aaa;
 }
 
 thead th {
@@ -58,6 +48,14 @@ thead th {
 	text-transform:uppercase;
 	border-right:1px solid #aaa;
 	padding:4px;
+}
+
+thead tr {
+	border-top:1px solid #aaa;
+}
+
+thead tr th {
+	border-top:1px solid #aaa;
 }
 
 tbody {
@@ -92,10 +90,6 @@ td.location+td {
 	display:none;
 }
 
-tr.court {
-	border-top:1px solid #aaa;
-}
-
 tr.court:hover {
 	background:#fff;
 }
@@ -112,6 +106,7 @@ td.court, td.casenumbers, td.names, td.statuses, td.updated  {
 	font-size:14px;
 	padding:4px;
 	border-right:1px solid #aaa;
+	border-top:1px solid #aaa;
 }
 
 td.updated {
