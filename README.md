@@ -19,3 +19,20 @@ To host the html locally, I do:
 
 	cd public
 	python -m SimpleHTTPServer
+
+
+Viewable at:
+
+[http://causelist.org](http://causelist.org) 
+
+with data available here: 
+
+[http://causelist.org/data](http://causelist.org/data) 
+
+alternatively in a tree format
+
+[http://causelist.org/data?format=tree](http://causelist.org/data?format=tree)
+
+and accepts a JSONP callback, eg:
+
+[http://causelist.org/data?callback=cb](http://causelist.org/data?callback=cb)

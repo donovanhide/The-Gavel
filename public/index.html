@@ -108,7 +108,7 @@ var directive = {
 };
 
 $.ajax({
-            url         : 'http://causelist.org/data/tree?format=tree&callback=?',
+            url         : 'http://causelist.org/data?format=tree&callback=?',
             dataType    : 'jsonp',
             ifModified  : true,
             success     : function(data){
