@@ -93,6 +93,9 @@ function getHearings(callback){
                 var areas = sizzle('div#content h2');
                 var area = cleanSingleCell(areas[0]);
                 for (var r=0; r< areas.length;r++){
+                    if (r>0 && areas[r]==areas[0]){
+                        break;
+                    }
                     var location = cleanSingleCell(areas[r]);
                     var nearest_table = sizzle('~table',areas[r]);
                     var rows = sizzle('tr',nearest_table[0]);
