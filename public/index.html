@@ -4,6 +4,7 @@
   <title>Cause List</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/js/pure.js"></script>
+  <script src="/js/jquery.timeago.js"></script>
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.1/build/cssreset/reset-min.css">
   <link rel="stylesheet" type="text/css" href="/css/style.css">
 	<!--[if IE]>
@@ -17,11 +18,11 @@
 </head>
 <body>
 <!-- HTML template -->
-<div>
+<div id="template">
 	
 	<h1>C<span>ause</span> L<span>ist</span></h1>
 	<h2>Track what's going on in the courts of the land, right now.</h2>
-	
+	<h3>Last updated <time id="scraped"></time>. Refresh to update.</h3>
   <table id="courtlist">
     <tbody id="main">
         <tr class="area">
@@ -89,6 +90,8 @@
 </div><!-- end container -->
 <script>
 var directive = {
+  'time#scraped@datetime':'scraped', 
+  'time#scraped@title':'scraped',    
   'tr.area':{
     'area<-results':{
       'td.area':'area.area',
@@ -127,7 +130,8 @@ $.ajax({
             dataType    : 'jsonp',
             ifModified  : true,
             success     : function(data){
-                                            $('table#courtlist').render(data, directive);
+                                            $('div#template').render(data, directive);
+                                            $('time#scraped').timeago();
                                         }
         });
 </script>

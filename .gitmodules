@@ -4,3 +4,6 @@
 [submodule "lib/connect"]
 	path = lib/connect
 	url = http://github.com/senchalabs/connect.git
+[submodule "public/extjs"]
+	path = public/extjs
+	url = git://github.com/probonogeek/extjs.git
