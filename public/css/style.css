@@ -1,6 +1,7 @@
 html {
 	color:#555;
 	background: #fefefe;
+	overflow-y: scroll;
 }
 
 body {
@@ -41,6 +42,10 @@ h2 span {
 
 h3{
 	margin-bottom:21px;
+}
+
+img {
+	margin-top:21px;
 }
 
 table {
