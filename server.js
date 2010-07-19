@@ -84,36 +84,41 @@ function getHearings(callback){
     console.log('getting hearings from '+pages.length+' pages');
     var count=0;
     var data = [];  
-    for (var i = 0;i<pages.length;i++){
-        getHTML(pages[i],function(html){      
+    for (var p = 0;p<pages.length;p++){
+        getHTML(pages[p],function(html){      
                 sys.puts(count);
                 doc.innerHTML = html;
                 count=count+1;
-                var updated = cleanSingleCell(sizzle('div#content p')[0]);
-                var areas = sizzle('div#content h2');
-                var area = cleanSingleCell(areas[0]);
-                for (var r=0; r< areas.length;r++){
-                    if (r>0 && areas[r]==areas[0]){
-                        break;
-                    }
-                    var location = cleanSingleCell(areas[r]);
-                    var nearest_table = sizzle('~table',areas[r]);
-                    var rows = sizzle('tr',nearest_table[0]);
-                    for(var i=0; i< rows.length; i++){
-                         var cells = sizzle('td',rows[i]);
-                            if (cells.length>0){
-                                data.push({
-                                              area             : area,
-                                              location         : location,
-                                              court            : cleanSingleCell(cells[0]),
-                                              caseNumber       : cleanMultipleCell(cells[1]),
-                                              name             : cleanMultipleCell(cells[2]),
-                                              currentStatus    : cleanMultipleCell(cells[3]),
-                                              updated          : updated
-                                          });
-                            };
-                         };
-                    }
+                try{
+                    var updated = cleanSingleCell(sizzle('div#content p')[0]);
+                    var areas = sizzle('div#content h2');
+                    var area = cleanSingleCell(areas[0]);
+                    for (var r=0; r< areas.length;r++){
+                        if (r>0 && areas[r]==areas[0]){
+                            break;
+                        }
+                        var location = cleanSingleCell(areas[r]);
+                        var nearest_table = sizzle('~table',areas[r]);
+                        var rows = sizzle('tr',nearest_table[0]);
+                        for(var i=0; i< rows.length; i++){
+                             var cells = sizzle('td',rows[i]);
+                                if (cells.length>0){
+                                      data.push({
+                                                      area             : area,
+                                                      location         : location,
+                                                      court            : cleanSingleCell(cells[0]),
+                                                      caseNumber       : cleanMultipleCell(cells[1]),
+                                                      name             : cleanMultipleCell(cells[2]),
+                                                      currentStatus    : cleanMultipleCell(cells[3]),
+                                                      updated          : updated
+                                                  });
+                                };
+                             };
+                        }
+                 }
+                 catch(err){
+                        console.log(err.description+'\nOn: '+pages[p])
+                 }
                    
                  if (count==pages.length){
                       var hash = crypto.createHash('md5').update(String(data)).digest('hex');
@@ -147,11 +152,13 @@ function getHearings(callback){
 
 function servePages(request, response) {
     if(request.headers['if-none-match'] == cache.hash){
+         console.log('served from cache');
          response.writeHead(304, {'Content-Type': 'application/json'});
          response.end();
     }
     else{
         response.writeHead(200, {'Content-Type': 'application/json; charset=utf-8','Etag': cache.hash});
+        console.log('served fresh');
         var queryString = url.parse(request.url, true);
         var result = (queryString.query && queryString.query.format == 'tree')?cache.tree:cache.flat;
         if (queryString.query && queryString.query.callback){
