@@ -7,6 +7,7 @@ html {
 body {
 	font-family: times, Times New Roman, times-roman, georgia, serif;
 	font-size:16px;
+	line-height:18px;
 }
 
 #template {
@@ -23,10 +24,7 @@ h1 {
 	font-size:56px;
 	letter-spacing:-1px;
 	color:#678197;
-}
-
-h1 span {
-	font-variant:small-caps;
+	margin-bottom:18px;
 }
 
 h2, h3 {
@@ -41,11 +39,11 @@ h2 span {
 }
 
 h3{
-	margin-bottom:21px;
+	margin-bottom:18px;
 }
 
 img {
-	margin-top:21px;
+	margin-top:18px;
 }
 
 table {
@@ -136,25 +134,32 @@ td.updated {
 }
 
 td.area{
-    width:50px;
+    width:150px;
 }
 td.location{
     width:150px;
 }
+
 td.court{
-    width:150px;
+	text-align:center;
+    width:54px;
 }
-td.casenumbers{
-    width:150px;
+
+td.casenumber {
+	text-align:center;
+    width:80px;
 }
+
 td.names{
     width:200px;
 }
+
 td.statuses{
-    width:200px;    
+    width:240px;
 }
+
 td.updated{
-    width:200px;
+    width:100px;
 }
 
 /* Don't tell anyone I did this! */
