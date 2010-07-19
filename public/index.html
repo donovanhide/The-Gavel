@@ -23,78 +23,77 @@
 	
 	<h1>C<span>ause</span> L<span>ist</span></h1>
 	<h2>Track what's going on in the courts of England <span>&amp;</span> Wales, right now.</h2>
-	<h3>Last updated <time id="scraped"></time>. Refresh to update.</h3>
-	
-  <div id="main">
-  <table id="courtlist">
-    <tbody id="main">
-        <tr class="area">
-            <td class="area">
-            </td>
-            <td>
-                <table>
-                    <tbody>
-                        <tr class="location">
-                            <td class="location">
-                            <td>
-                             <td>
-                                   <table>
-                                       <thead>
-                                            <tr>
-                                                <th>Court Number</th>
-                                                <th>Case Number(s)</th>
-                                                <th>Name(s)</th>
-                                                <th>Status</th>
-                                                <th>Updated</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="court">
-                                                <td class="court"></td>
-                                                <td class="casenumbers">
-                                                    <table>
-                                                        <tbody>
-                                                            <tr class="casenumber">
-                                                                <td class="casenumber"></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                                <td class="names">
-                                                     <table>
-                                                        <tbody>
-                                                            <tr class="name">
-                                                                <td class="name"></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                                <td class="statuses">
-                                                     <table>
-                                                        <tbody>
-                                                            <tr class="status">
-                                                                <td class="status"></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                                <td class="updated"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table> 
-                                </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-</div><!-- end main -->
-<div id="loading">
-	<img alt="Loading" title="Please wait..." src="/images/loading.gif" />
-</div>
-</div><!-- end template -->
+    <div id="main">
+      <h3>Last updated <time id="scraped"></time>. Refresh to update.</h3>
+      <table id="courtlist">
+        <tbody id="top">
+            <tr class="area">
+                <td class="area">
+                </td>
+                <td>
+                    <table>
+                        <tbody>
+                            <tr class="location">
+                                <td class="location">
+                                <td>
+                                 <td>
+                                       <table>
+                                           <thead>
+                                                <tr>
+                                                    <th>Court Number</th>
+                                                    <th>Case Number(s)</th>
+                                                    <th>Name(s)</th>
+                                                    <th>Status</th>
+                                                    <th>Updated</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="court">
+                                                    <td class="court"></td>
+                                                    <td class="casenumbers">
+                                                        <table>
+                                                            <tbody>
+                                                                <tr class="casenumber">
+                                                                    <td class="casenumber"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td class="names">
+                                                         <table>
+                                                            <tbody>
+                                                                <tr class="name">
+                                                                    <td class="name"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td class="statuses">
+                                                         <table>
+                                                            <tbody>
+                                                                <tr class="status">
+                                                                    <td class="status"></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td class="updated"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table> 
+                                    </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+    </div><!-- end main -->
+    <div id="loading">
+    	<img alt="Loading" title="Please wait..." src="/images/loading.gif" />
+    </div>
+    </div><!-- end template -->
 <script>
 var directive = {
   'time#scraped@datetime':'scraped', 
@@ -139,6 +138,8 @@ $.ajax({
             success     : function(data){
                                             $('div#template').render(data, directive);
                                             $('time#scraped').timeago();
+                                            $('div#loading').hide();
+                                            $('div#main').show();
                                         }
         });
 </script>

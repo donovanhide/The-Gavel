@@ -14,7 +14,7 @@ body {
 	padding:42px;
 }
 
-#main {
+div#main {
 	display:none;
 }
 
@@ -73,7 +73,7 @@ tbody {
 	border:none;
 }
 
-tbody#main {
+tbody#top {
 	border-bottom:1px solid #aaa;
 }
 
