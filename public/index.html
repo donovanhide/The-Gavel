@@ -8,6 +8,7 @@
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.1/build/cssreset/reset-min.css">
   <link rel="stylesheet" type="text/css" href="/css/style.css">
 	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 		<style>
 			td.area {
 			width:6%;
@@ -23,6 +24,8 @@
 	<h1>C<span>ause</span> L<span>ist</span></h1>
 	<h2>Track what's going on in the courts of England <span>&amp;</span> Wales, right now.</h2>
 	<h3>Last updated <time id="scraped"></time>. Refresh to update.</h3>
+	
+  <div id="main">
   <table id="courtlist">
     <tbody id="main">
         <tr class="area">
@@ -87,7 +90,11 @@
         </tr>
     </tbody>
   </table>
-</div><!-- end container -->
+</div><!-- end main -->
+<div id="loading">
+	<img alt="Loading" title="Please wait..." src="/images/loading.gif" />
+</div>
+</div><!-- end template -->
 <script>
 var directive = {
   'time#scraped@datetime':'scraped', 

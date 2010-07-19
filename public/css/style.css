@@ -8,6 +8,16 @@ body {
 	font-size:16px;
 }
 
+#template {
+	width:960px;
+	margin:42px auto;
+	padding:42px;
+}
+
+#main {
+	display:none;
+}
+
 h1 {
 	font-size:56px;
 	letter-spacing:-1px;
@@ -18,22 +28,19 @@ h1 span {
 	font-variant:small-caps;
 }
 
-h2 {
+h2, h3 {
 	font-size:18px;
 	font-style:italic;
 	letter-spacing:-1px;
 	color: #555;
-	margin-bottom:21px;
 }
+
 h2 span {
-	font-family:Baskerville, Palatino, "Palatino Linotype", Constantina, "URW Paladio L", Georgia, serif;
+	font-family:Baskerville, Palatino, "Palatino Linotype", Constantina, "URW Paladio L", georgia, times, serif;
 }
 
-
-div {
-	width:960px;
-	margin:42px auto;
-	padding:42px;
+h3{
+	margin-bottom:21px;
 }
 
 table {
@@ -107,6 +114,7 @@ tr.area:hover {
 	background:#f1f1f1!important;
 }
 */
+
 tr.location:hover {
 	color:#000!important;
 }
