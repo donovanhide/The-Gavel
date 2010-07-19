@@ -151,3 +151,7 @@ td.statuses{
 td.updated{
     width:200px;
 }
+
+/* Don't tell anyone I did this! */
+@-moz-document url-prefix() { td table td table { margin-top:-1px; } }
+@-moz-document url-prefix() { td table { margin-top:-1px; } }
