@@ -132,15 +132,16 @@ var directive = {
 };
 
 $.ajax({
-            url         : 'http://causelist.org/data?format=tree&callback=?',
-            dataType    : 'jsonp',
-            ifModified  : true,
-            success     : function(data){
-                                            $('div#template').render(data, directive);
-                                            $('time#scraped').timeago();
-                                            $('div#loading').hide();
-                                            $('div#main').show();
-                                        }
+            url             : 'http://causelist.org/data?format=tree&callback=?',
+            dataType        : 'jsonp',
+            ifModified      : true,
+            jsonpCallback   : 'dataCallBack',
+            success         : function(data){
+                                                $('div#template').render(data, directive);
+                                                $('time#scraped').timeago();
+                                                $('div#loading').hide();
+                                                $('div#main').show();
+                                            }
         });
 </script>
 </body>
