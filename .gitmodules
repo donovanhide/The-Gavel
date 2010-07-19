@@ -7,3 +7,6 @@
 [submodule "public/extjs"]
 	path = public/extjs
 	url = git://github.com/probonogeek/extjs.git
+[submodule "lib/redis-node-client"]
+	path = lib/redis-node-client
+	url = http://github.com/fictorial/redis-node-client.git
