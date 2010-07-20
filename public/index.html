@@ -36,7 +36,7 @@
 	<h1>C<span>ause</span> L<span>ist</span></h1>
 	<h2>Track what's going on in the courts of England <span>&amp;</span> Wales, right now.</h2>
     <div id="main">
-      <h3>Last updated <time class="updated"></time>. Refresh to update.</h3>
+      <h3>Last updated <time class="updated"></time>. Refreshes automatically..</h3>
       <table id="courtlist">
         <tbody id="top">
             <tr class="area">
@@ -144,18 +144,32 @@ var directive = {
   }
 };
 
-$.ajax({
-            url             : '/data?format=tree&callback=?',
-            dataType        : 'jsonp',
-            ifModified      : true,
-            jsonpCallback   : 'dataCallBack',
-            success         : function(data){
-                                                $('div#template').render(data, directive);
-                                                $('time.updated').timeago();
-                                                $('div#loading').hide();
-                                                $('div#main').show();
-                                            }
-        });
+function updatePage(data){
+    $.extend(request,{ url:'/next?format=tree'});
+    $('div#template').render(data, template);
+    $('time.updated').timeago();
+    $('div#loading').hide();
+    $('div#main').show();
+    $.ajax(request);
+}
+
+function handleTimeout(XMLHttpRequest, textStatus, errorThrown){
+    setTimeout(function(){
+            $.ajax(request);
+    },5*1000);
+}
+
+var request = {
+                    url             : '/data?format=tree',
+                    ifModified      : true,
+                    success         : updatePage,
+                    error           : handleTimeout,
+                    timeout         : 110*1000 // 1:50
+              };
+
+var template = $('div#template').compile(directive);
+$.ajax(request);
+
 </script>
 </body>
 </html>

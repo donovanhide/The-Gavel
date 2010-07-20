@@ -32,6 +32,15 @@ function cleanSingleCell(cell){
      return stripHTML(stripWhitespace(cell.text));
 };
 
+function setDom(html){
+    try{
+         doc.innerHTML = html;   
+    }
+    catch(err){
+           console.log(err.description+'\nWith: '+html)
+    }
+}
+
 function getHTML(host,path,callback){
     var client = http.createClient(80, host),
         url = host+path,
@@ -49,14 +58,18 @@ function getHTML(host,path,callback){
             response.addListener('end',function(){
                 var etag = response.headers['etag'];
                 if (response.statusCode == 304){
-                    //console.log('serving from cache');  
                     callback(cache.response,cache.etag);
                 }
-                else{
+                else if (response.statusCode == 200){
                     redis.hmset(httpCache,'response',html,'etag',etag,function(err,value){
                         callback(html,etag);  
                     })
                 }
+                else{
+                    console.log ('Error getting html for '+url+'\nResponse Code:'+response.statusCode+'\nResults: '+html)
+                    callback(null,null);
+                }
+                
             })
         })
     })
@@ -121,7 +134,7 @@ function publishData(data,etags){
         redis.setnx(key,json,function(err,value){
             if (value){
                             redis.rpush('timeline',key,function(err,reply){
-                                    redis.publish('next',json,function(err,reply){
+                                    redis.publish('next',key,function(err,reply){
                                             console.log('Published '+key+' to '+(reply === 0 ? "no one" : (reply + " subscriber(s).")));   
                                      });
                             });
@@ -135,7 +148,7 @@ function publishData(data,etags){
 function scrapeCourtList(callback){
     var court_list = getHTML('www.hmcourts-service.gov.uk','/xhibit/court_lists.htm',function(html,etag){
         console.log('getting courts');
-        doc.innerHTML = html;
+        setDom(html);
         var links = sizzle('div#content a[href$=htm]:not(a[href^=..])');
         var pages = _(links).chain().pluck('href').uniq().value();
         callback(pages)
@@ -150,7 +163,7 @@ function scrapeCourt(){
             etags = [];  
         _(pages).each(function(page){
             getHTML('www.hmcourts-service.gov.uk','/onlineservices/xhibit/'+page,function(html,etag){      
-                    doc.innerHTML = html;
+                    setDom(html);
                     etags.push(etag);
                     count=count+1;
                     try{
