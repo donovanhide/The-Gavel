@@ -41,6 +41,8 @@
         <tbody id="top">
             <tr class="area">
                 <td class="area">
+                    <span class="area"></span><br/>
+                    <span class="updated">(Last updated <br/><time class="updated"></time>)</span>
                 </td>
                 <td>
                     <table>
@@ -56,7 +58,6 @@
                                                     <th>Case(s)</th>
                                                     <th>Name(s)</th>
                                                     <th>Status</th>
-                                                    <th>Updated</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -89,7 +90,6 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td class="updated"><time class="updated"/></td>
                                                 </tr>
                                             </tbody>
                                         </table> 
@@ -112,7 +112,9 @@ var directive = {
   'h3 time.updated@title':'updated',    
   'tr.area':{
     'area<-results':{
-      'td.area':'area.area',
+      'td.area span.area':'area.area',
+      'td.area time.updated@datetime':function(item){return item.item.locations[0].courts[0].updated;}, 
+      'td.area time.updated@title':function(item){return item.item.locations[0].courts[0].updated;},
       'tr.location':{
           'location<-area.locations':{
               'td.location':'location.location',
@@ -133,9 +135,7 @@ var directive = {
                           'status<-court.currentStatus':{
                               'td.status':'status'
                           }
-                      },
-                      'td.updated time@datetime':'court.updated',
-                      'td.updated time@title':'court.updated'
+                      }
                   }
               }
           }
