@@ -63,7 +63,7 @@
                                                 <tr class="court">
                                                     <td class="court"></td>
                                                     <td class="casenumbers">
-                                                        <table>
+                                                        <table class='casenumbers'>
                                                             <tbody>
                                                                 <tr class="casenumber">
                                                                     <td class="casenumber"></td>
@@ -72,7 +72,7 @@
                                                         </table>
                                                     </td>
                                                     <td class="names">
-                                                         <table>
+                                                         <table class="names">
                                                             <tbody>
                                                                 <tr class="name">
                                                                     <td class="name"></td>
@@ -81,7 +81,7 @@
                                                         </table>
                                                     </td>
                                                     <td class="statuses">
-                                                         <table>
+                                                         <table class="statuses">
                                                             <tbody>
                                                                 <tr class="status">
                                                                     <td class="status"></td>
@@ -121,7 +121,7 @@ var directive = {
                       'td.court':'court.court',
                       'tr.casenumber':{
                           'caseNumber<-court.caseNumber':{
-                              'td.casenumber':'caseNumber'
+                              'td.casenumber':'caseNumber'          
                           }
                       },
                       'tr.name':{
