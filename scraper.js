@@ -36,7 +36,7 @@ function getHTML(host,path,callback){
     var client = http.createClient(80, host),
         url = host+path,
         httpCache = 'cache:'+url,
-        html;
+        html="";
     redis.hgetall(httpCache,function(err,cache){
         redisLib.convertMultiBulkBuffersToUTF8Strings(cache);
         var headers = {'host': host,'If-None-Match':cache?cache.etag:null},
@@ -101,10 +101,10 @@ function treeify(data){
 
 function publishData(data,etags){
       //hash only changes when an etag changes - beautiful!!!
-      var hash = crypto.createHash('md5').update(etags.sort().join()).digest('hex');
-      var updated = new Date(_(data).chain().pluck('updated').max().value());
-      console.log('Hash: '+hash+' Updated: '+updated);
-      var json = JSON.stringify({
+      var hash = crypto.createHash('md5').update(etags.sort().join()).digest('hex'),
+          updated = new Date(_(data).chain().pluck('updated').max().value()),
+          key = 'data:'+hash+':'+updated.getTime(),
+          json = JSON.stringify({
                                     flat: {
                                             updated : updated,
                                             count   : data.length,
@@ -118,15 +118,16 @@ function publishData(data,etags){
                                             results : treeify(data)
                                          }
                                  },null,'\t');        
-        redis.setnx('data:'+hash+':'+updated.getTime(),json,function(err,value){
+        redis.setnx(key,json,function(err,value){
             if (value){
-                        redis.publish('latest',json,function(err,reply){
-                                console.log('Published latest to '+(reply === 0 ? "no one" : (reply + " subscriber(s).")));   
+                            redis.rpush('timeline',key,function(err,reply){
+                                    redis.publish('next',json,function(err,reply){
+                                            console.log('Published '+key+' to '+(reply === 0 ? "no one" : (reply + " subscriber(s).")));   
+                                     });
                             });
-                       }
-                        
+            }
             else{
-                console.log('No new data from site.');
+                console.log(key+' already exists.');
             }
         });                 
 };

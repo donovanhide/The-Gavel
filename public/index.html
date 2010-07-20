@@ -36,7 +36,7 @@
 	<h1>C<span>ause</span> L<span>ist</span></h1>
 	<h2>Track what's going on in the courts of England <span>&amp;</span> Wales, right now.</h2>
     <div id="main">
-      <h3>Last updated <time id="scraped"></time>. Refresh to update.</h3>
+      <h3>Last updated <time class="updated"></time>. Refresh to update.</h3>
       <table id="courtlist">
         <tbody id="top">
             <tr class="area">
@@ -89,7 +89,7 @@
                                                             </tbody>
                                                         </table>
                                                     </td>
-                                                    <td class="updated"></td>
+                                                    <td class="updated"><time class="updated"/></td>
                                                 </tr>
                                             </tbody>
                                         </table> 
@@ -108,8 +108,8 @@
     </div><!-- end template -->
 <script>
 var directive = {
-  'time#scraped@datetime':'scraped', 
-  'time#scraped@title':'scraped',    
+  'h3 time.updated@datetime':'updated', 
+  'h3 time.updated@title':'updated',    
   'tr.area':{
     'area<-results':{
       'td.area':'area.area',
@@ -134,7 +134,8 @@ var directive = {
                               'td.status':'status'
                           }
                       },
-                      'td.updated':'court.updated'
+                      'td.updated time@datetime':'court.updated',
+                      'td.updated time@title':'court.updated'
                   }
               }
           }
@@ -144,13 +145,13 @@ var directive = {
 };
 
 $.ajax({
-            url             : 'http://causelist.org/data?format=tree&callback=?',
+            url             : '/data?format=tree&callback=?',
             dataType        : 'jsonp',
             ifModified      : true,
             jsonpCallback   : 'dataCallBack',
             success         : function(data){
                                                 $('div#template').render(data, directive);
-                                                $('time#scraped').timeago();
+                                                $('time.updated').timeago();
                                                 $('div#loading').hide();
                                                 $('div#main').show();
                                             }
