@@ -100,26 +100,25 @@ td.location {
 
 }
 
+/* TODO remove this when extra tds go away */
 td.location+td {
 	display:none;
 }
 
-tr.court:nth-child(odd) {
-	background:#fafafa;
-}
-
-tr.court:hover {
-	background:#fff;
-}
-
-/*
-tr.area:hover {
-	background:#f1f1f1!important;
-}
+/* 	TODO Zebra stripes and hovers only for modern browsers
+	use Modernizr for js fallback for older browsers - worth the bother?
 */
 
+tr.court:nth-child(odd) {
+	background:#f4f4f4;
+}
+
 tr.location:hover {
-	color:#000!important;
+	background:#CCE6FF;
+}
+
+tr.location:hover tr.court:nth-child(odd) {
+	background:rgba(250,250,250,0.5);
 }
 
 td.court, td.casenumbers, td.names, td.statuses, td.updated  {
