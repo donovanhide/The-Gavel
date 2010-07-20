@@ -133,10 +133,10 @@ td.updated {
 }
 
 td.area{
-    width:150px;
+    width:100px;
 }
 td.location{
-    width:150px;
+    width:100px;
 }
 
 td.court{
@@ -144,21 +144,21 @@ td.court{
     width:54px;
 }
 
-td.casenumber {
+table.casenumbers {
 	text-align:center;
     width:80px;
 }
 
-td.names{
+table.names{
     width:200px;
 }
 
-td.statuses{
+table.statuses{
     width:240px;
 }
 
 td.updated{
-    width:100px;
+    width:150px;
 }
 
 /* Don't tell anyone I did this! */

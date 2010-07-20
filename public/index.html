@@ -16,6 +16,19 @@
 			}
 		</style>
 	<![endif]-->
+	<script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-295933-16']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
 </head>
 <body>
 <!-- HTML template -->
@@ -50,7 +63,7 @@
                                                 <tr class="court">
                                                     <td class="court"></td>
                                                     <td class="casenumbers">
-                                                        <table>
+                                                        <table class='casenumbers'>
                                                             <tbody>
                                                                 <tr class="casenumber">
                                                                     <td class="casenumber"></td>
@@ -59,7 +72,7 @@
                                                         </table>
                                                     </td>
                                                     <td class="names">
-                                                         <table>
+                                                         <table class="names">
                                                             <tbody>
                                                                 <tr class="name">
                                                                     <td class="name"></td>
@@ -68,7 +81,7 @@
                                                         </table>
                                                     </td>
                                                     <td class="statuses">
-                                                         <table>
+                                                         <table class="statuses">
                                                             <tbody>
                                                                 <tr class="status">
                                                                     <td class="status"></td>
@@ -108,7 +121,7 @@ var directive = {
                       'td.court':'court.court',
                       'tr.casenumber':{
                           'caseNumber<-court.caseNumber':{
-                              'td.casenumber':'caseNumber'
+                              'td.casenumber':'caseNumber'          
                           }
                       },
                       'tr.name':{
