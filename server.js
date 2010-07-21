@@ -24,6 +24,7 @@ function sendData(request,response,key){
             {
                 response.write(result);
             }
+            redis.close();
             response.end();
         })   
     }
@@ -33,6 +34,7 @@ function serveData(app){
     app.get('/data',function(request,response){
         var redis = redisLib.createClient();
         redis.lindex('timeline',-1,function(err,key){
+            redis.close();
             sendData(request,response,key)
         });
     });
@@ -40,10 +42,12 @@ function serveData(app){
         var redis = redisLib.createClient();
         redis.subscribeTo('next',function(err,key){
             redis.unsubscribeFrom('next');
+            redis.close();
             sendData(request,response,key);
         })
         request.connection.on('timeout',function(){
             redis.unsubscribeFrom('next');
+            redis.close();
         })
     })
 }
