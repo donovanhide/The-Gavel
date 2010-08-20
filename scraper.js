@@ -1,6 +1,7 @@
 #!/usr/bin/env node
   
 var sys = require("sys"),
+    fs= require("fs"),
     http = require('http'),
     dns = require('dns'),
     redisLib = require("./lib/redis-node-client/lib/redis-client"),
@@ -178,10 +179,10 @@ function scrapeCourt(ip_address){
                         var updated = cleanSingleCell(sizzle('div#content p')[0]);
                         var areas = sizzle('div#content h2');
                         var area = cleanSingleCell(areas[0]);
-                        console.log(area);
+                        //console.log(area);
                         for (var r=0; r< areas.length;r++){
                             var location = cleanSingleCell(areas[r]);
-                            console.log('\t'+location);
+                            //console.log('\t'+location);
                             var nearest_table = sizzle('~table',areas[r]);
                             var rows = sizzle('tr',nearest_table[0]);
                             for(var i=0; i< rows.length; i++){
