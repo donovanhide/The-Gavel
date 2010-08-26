@@ -1,18 +1,12 @@
-[submodule "lib/jsdom"]
-	path = lib/jsdom
+[submodule "deps/jsdom"]
+	path = deps/jsdom
 	url = http://github.com/tmpvar/jsdom.git
-[submodule "lib/connect"]
-	path = lib/connect
+[submodule "deps/connect"]
+	path = deps/connect
 	url = http://github.com/senchalabs/connect.git
-[submodule "public/extjs"]
-	path = public/extjs
-	url = git://github.com/probonogeek/extjs.git
-[submodule "lib/redis-node-client"]
-	path = lib/redis-node-client
+[submodule "deps/redis-node-client"]
+	path = deps/redis-node-client
 	url = http://github.com/fictorial/redis-node-client.git
-[submodule "lib/JSLINQ"]
-	path = lib/JSLINQ
-	url = http://github.com/Marak/JSLINQ.git
-[submodule "node-htmlparser"]
-	path = lib/node-htmlparser
+[submodule "deps/node-htmlparser"]
+	path = deps/node-htmlparser
 	url = http://github.com/tautologistics/node-htmlparser.git
