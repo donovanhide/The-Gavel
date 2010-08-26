@@ -15,9 +15,16 @@
 			text-align:center;
 			}
 		</style>
-	<![endif]-->
+		<![endif]-->
+		<style>
+			#daily	div {display:block!important;}
+			#daily table {width:100%!important;}
+			#daily div#template {width:600px;}
+			#daily table * {border:none;}
+			#entry h3 {margin:42px!important;}
+		</style>
 </head>
-<body>
+<body id="daily">
 <!-- HTML template -->
 <div id="template">
 	<h1>C<span>ause</span> L<span>ist</span></h1>
@@ -25,12 +32,52 @@
 	<div id="main">
 
 		<div class="entry">
-			<h3>Thursday 26th August</h3>
+			<h4>Thursday 26th August</h4>
 			<table>
-				<tr class="area">
+				<thead>
+					<th>Area</th>
+					<th>Court</th>
+					<th>Defendents</th>
+					<th>Case</th>
+					<th>Duration</th>
+				</thead>
+			<tr>
+			<td class="area">
+				Liverpool
+				</td>
+			<td class="court">	
+				Liverpool
+			</td>
+			<td class="defendants">
+				Jack Mottram
+			</td>
+			<td class="case">
+				T10087
+			</td>
+			<td class="duration">
+				First day
+			</td>
+		</tr>
+		<tr>
 
+			<td class="area">
+				Liverpool
+				</td>
+			<td class="court">	
+				Liverpool
+			</td>
+			<td class="defendants">
+				Jack Mottram
+			</td>
+			<td class="case">
+				T10087
+			</td>
+			<td class="duration">
+				First day
+			</td>
+		</tr>
 			</table>
-		</div>
+		</div><!-- entry -->
 
     </div><!-- end main -->
     </div><!-- end template -->
