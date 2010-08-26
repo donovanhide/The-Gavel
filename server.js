@@ -1,5 +1,7 @@
-var connect = require('./lib/connect/lib/connect'),
-    redisLib = require("./lib/redis-node-client/lib/redis-client"),
+require.paths.push('./lib');
+
+var connect = require('connect'),
+    redisLib = require("redis-client"),
     http = require('http'),
     url = require('url');
 

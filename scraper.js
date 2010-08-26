@@ -1,18 +1,19 @@
 #!/usr/bin/env node
   
+require.paths.push('./lib');
+
 var sys = require("sys"),
     http = require('http'),
     dns = require('dns'),
-    redisLib = require("./lib/redis-node-client/lib/redis-client"),
+    redisLib = require("redis-client"),
     redis = redisLib.createClient(),
-    dom = require("./lib/jsdom/lib/jsdom/level1/core").dom.level1.core,
-    htmlparser = require("./lib/node-htmlparser"),
-    doc =  require("./lib/jsdom/lib/jsdom/browser").windowAugmentation(dom, {parser: htmlparser}).document,
-    sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc),
+    parser = require("node-htmlparser"),
+    jsdom = require("jsdom"),
+    window = jsdom.jsdom().createWindow(),
     crypto = require('crypto'),
-    linq = require('./lib/linq');
+    linq = require('linq');
 
-require('./lib/underscore');
+require('underscore');
 
 function isEmptyString(string){
     return string!='';
@@ -36,7 +37,7 @@ function cleanSingleCell(cell){
 
 function setDom(html){
     try{
-         doc.innerHTML = html;   
+         window.document.innerHTML = html;   
     }
     catch(err){
            console.log(err.description+'\nWith: '+html)
@@ -75,6 +76,14 @@ function getHTML(host,path,callback){
             })
         })
     })
+}
+
+function treeify2(data){
+    return Enumerable.From(data)
+                     .GroupBy('$.area')
+                     .Select('{area: $.Key(),\
+                              locations: $.Values()}');
+                     
 }
 
 //Yuck! JSON Transform Language required!
@@ -117,14 +126,14 @@ function treeify(data){
 function publishData(data,etags){
       //hash only changes when an etag changes - beautiful!!!
       var hash = crypto.createHash('md5').update(etags.sort().join()).digest('hex'),
-          updated = new Date(_(data).chain().pluck('updated').max().value()),
+          updated = new Date(Enumerable.From(data).Max('$.updated')),
           key = 'data:'+hash+':'+updated.getTime(),
           clean_data = Enumerable.From(data)
                                  .Distinct("$.location+$.court")
                                  .OrderBy("$.area")
                                  .ThenBy("$.location")
                                  .ToArray(),
-          json = JSON.stringify({
+          json = JSON.stringify({   
                                     flat: {
                                             updated : updated,
                                             count   : clean_data.length,
@@ -139,6 +148,7 @@ function publishData(data,etags){
                                          }
                                  },null,'\t');   
         console.log("Stored "+clean_data.length+" courts from "+data.length+" lines");
+        console.log(JSON.stringify(treeify(clean_data)));
         redis.setnx(key,json,function(err,value){
             if (value){
                             redis.rpush('timeline',key,function(err,reply){
@@ -157,8 +167,11 @@ function scrapeCourtList(ip_address,callback){
     var court_list = getHTML(ip_address,'/xhibit/court_lists.htm',function(html,etag){
         console.log('getting courts');
         setDom(html);
-        var links = sizzle('div#content a[href$=htm]:not(a[href^=..])');
-        var pages = _(links).chain().pluck('href').uniq().value();
+        var links = jQuery('div#content a[href$=htm]:not(a[href^=..])');
+        var pages = Enumerable.From(links)
+                              .Distinct()
+                              .Select('$.href') 
+                              .ToArray();
         callback(pages)
     });
 }
@@ -169,36 +182,33 @@ function scrapeCourt(ip_address){
         var count=0,
             data = [],
             etags = [];  
-        _(pages).each(function(page){
+        jQuery.each(pages,function(index,page){
             getHTML(ip_address,'/onlineservices/xhibit/'+page,function(html,etag){      
                     setDom(html);
                     etags.push(etag);
                     count=count+1;
                     try{
-                        var updated = cleanSingleCell(sizzle('div#content p')[0]);
-                        var areas = sizzle('div#content h2');
-                        var area = cleanSingleCell(areas[0]);
-                        console.log(area);
-                        for (var r=0; r< areas.length;r++){
-                            var location = cleanSingleCell(areas[r]);
-                            console.log('\t'+location);
-                            var nearest_table = sizzle('~table',areas[r]);
-                            var rows = sizzle('tr',nearest_table[0]);
-                            for(var i=0; i< rows.length; i++){
-                                 var cells = sizzle('td',rows[i]);
-                                    if (cells.length>0){
+                        var updated = cleanSingleCell(jQuery('div#content p')[0]);
+                        var area = cleanSingleCell(jQuery('div#content h2')[0]);
+                        jQuery('div#content table').each(function(index,table){
+                            var location = cleanSingleCell(jQuery(table).prevAll('h2').get(0));
+                            jQuery(table).find('tr').each(function(index,row){
+                                var cells = jQuery(row).find('td');
+                                if (cells.length>0){
+                                          var court = cleanSingleCell(cells.get(0));
+                                          console.log([area,location,court].join(','));
                                           data.push({
                                                           area             : area,
                                                           location         : location,
-                                                          court            : cleanSingleCell(cells[0]),
+                                                          court            : court,
                                                           caseNumber       : cleanMultipleCell(cells[1]),
                                                           name             : cleanMultipleCell(cells[2]),
                                                           currentStatus    : cleanMultipleCell(cells[3]),
                                                           updated          : new Date(Date.parse(updated))
                                                       });
                                     };
-                                 };
-                            }
+                                 });
+                            });
                      }
                      catch(err){
                             console.log(err.description+'\nOn: '+page)
@@ -213,14 +223,17 @@ function scrapeCourt(ip_address){
 
 var ONE_MINUTE = 1000*60;
 var FIVE_SECONDS = 1000*5;
-
-dns.lookup('www.hmcourts-service.gov.uk',function(err,address){
-    if(err){
-        console.log('Could not resolve IP address');
-    }
-    else{
-        console.log('Resolved IP address: '+address);
-        setInterval(scrapeCourt,ONE_MINUTE,address);
-        scrapeCourt(address);  
-    }
-})
+var jQuery;
+jsdom.jQueryify(window,function(){
+    jQuery = window.jQuery;
+    dns.lookup('www.hmcourts-service.gov.uk',function(err,address){
+        if(err){
+            console.log('Could not resolve IP address');
+        }
+        else{
+            console.log('Resolved IP address: '+address);
+                setInterval(scrapeCourt,ONE_MINUTE,address);
+                scrapeCourt(address); 
+            }
+    });
+});

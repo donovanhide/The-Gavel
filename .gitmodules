@@ -13,3 +13,6 @@
 [submodule "lib/JSLINQ"]
 	path = lib/JSLINQ
 	url = http://github.com/Marak/JSLINQ.git
+[submodule "node-htmlparser"]
+	path = lib/node-htmlparser
+	url = http://github.com/tautologistics/node-htmlparser.git
