@@ -121,15 +121,6 @@ tr.court:nth-child(odd) {
 	background:#f4f4f4;
 }
 
-/* Not sure if it works - not associated with any functionality */
-/*tr.location:hover {
-    background:#CCE6FF;
-}
-
-tr.location:hover tr.court:nth-child(odd) {
-    background:rgba(250,250,250,0.5);
-}*/
-
 td.court, td.casenumbers, td.names, td.statuses, td.updated  {
 	font-size:14px;
 	padding:4px;
@@ -162,6 +153,15 @@ table.statuses{
     text-align:center;
     width:250px;
 }
+
+/* About page */
+
+p {
+	font-size: 18px;
+	line-height: 27px;
+}
+
+
 
 /* Don't tell anyone I did this! */
 @-moz-document url-prefix() { td table td table { margin-top:-1px; } }
