@@ -3,6 +3,7 @@
 require.paths.push('./lib');
 
 var sys = require("sys"),
+    fs= require("fs"),
     http = require('http'),
     dns = require('dns'),
     redisLib = require("redis-client"),
@@ -148,7 +149,7 @@ function publishData(data,etags){
                                          }
                                  },null,'\t');   
         console.log("Stored "+clean_data.length+" courts from "+data.length+" lines");
-        console.log(JSON.stringify(treeify(clean_data)));
+        // console.log(JSON.stringify(treeify(clean_data)));
         redis.setnx(key,json,function(err,value){
             if (value){
                             redis.rpush('timeline',key,function(err,reply){
