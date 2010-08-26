@@ -10,3 +10,6 @@
 [submodule "lib/redis-node-client"]
 	path = lib/redis-node-client
 	url = http://github.com/fictorial/redis-node-client.git
+[submodule "lib/JSLINQ"]
+	path = lib/JSLINQ
+	url = http://github.com/Marak/JSLINQ.git

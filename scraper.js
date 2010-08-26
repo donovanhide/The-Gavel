@@ -1,14 +1,17 @@
 #!/usr/bin/env node
   
 var sys = require("sys"),
+    fs= require("fs"),
     http = require('http'),
+    dns = require('dns'),
     redisLib = require("./lib/redis-node-client/lib/redis-client"),
     redis = redisLib.createClient(),
     dom = require("./lib/jsdom/lib/jsdom/level1/core").dom.level1.core,
     htmlparser = require("./lib/node-htmlparser"),
     doc =  require("./lib/jsdom/lib/jsdom/browser").windowAugmentation(dom, {parser: htmlparser}).document,
     sizzle = require('./lib/jsdom/example/sizzle/sizzle').sizzleInit({}, doc),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    linq = require('./lib/linq');
 
 require('./lib/underscore');
 
@@ -117,20 +120,26 @@ function publishData(data,etags){
       var hash = crypto.createHash('md5').update(etags.sort().join()).digest('hex'),
           updated = new Date(_(data).chain().pluck('updated').max().value()),
           key = 'data:'+hash+':'+updated.getTime(),
+          clean_data = Enumerable.From(data)
+                                 .Distinct("$.location+$.court")
+                                 .OrderBy("$.area")
+                                 .ThenBy("$.location")
+                                 .ToArray(),
           json = JSON.stringify({
                                     flat: {
                                             updated : updated,
-                                            count   : data.length,
+                                            count   : clean_data.length,
                                             hash    : hash,
-                                            results : data
+                                            results : clean_data
                                           },
                                     tree:{
                                             updated : updated,
-                                            count   : data.length,
+                                            count   : clean_data.length,
                                             hash    : hash,
-                                            results : treeify(data)
+                                            results : treeify(clean_data)
                                          }
-                                 },null,'\t');        
+                                 },null,'\t');   
+        console.log("Stored "+clean_data.length+" courts from "+data.length+" lines");
         redis.setnx(key,json,function(err,value){
             if (value){
                             redis.rpush('timeline',key,function(err,reply){
@@ -145,8 +154,8 @@ function publishData(data,etags){
         });                 
 };
 
-function scrapeCourtList(callback){
-    var court_list = getHTML('www.hmcourts-service.gov.uk','/xhibit/court_lists.htm',function(html,etag){
+function scrapeCourtList(ip_address,callback){
+    var court_list = getHTML(ip_address,'/xhibit/court_lists.htm',function(html,etag){
         console.log('getting courts');
         setDom(html);
         var links = sizzle('div#content a[href$=htm]:not(a[href^=..])');
@@ -155,14 +164,14 @@ function scrapeCourtList(callback){
     });
 }
 
-function scrapeCourt(){
-    scrapeCourtList(function(pages){
+function scrapeCourt(ip_address){
+    scrapeCourtList(ip_address,function(pages){
         console.log('getting hearings from '+pages.length+' courts');
         var count=0,
             data = [],
             etags = [];  
         _(pages).each(function(page){
-            getHTML('www.hmcourts-service.gov.uk','/onlineservices/xhibit/'+page,function(html,etag){      
+            getHTML(ip_address,'/onlineservices/xhibit/'+page,function(html,etag){      
                     setDom(html);
                     etags.push(etag);
                     count=count+1;
@@ -170,11 +179,10 @@ function scrapeCourt(){
                         var updated = cleanSingleCell(sizzle('div#content p')[0]);
                         var areas = sizzle('div#content h2');
                         var area = cleanSingleCell(areas[0]);
+                        //console.log(area);
                         for (var r=0; r< areas.length;r++){
-                            if (r>0 && areas[r]==areas[0]){//Examine!
-                                break;
-                            }
                             var location = cleanSingleCell(areas[r]);
+                            //console.log('\t'+location);
                             var nearest_table = sizzle('~table',areas[r]);
                             var rows = sizzle('tr',nearest_table[0]);
                             for(var i=0; i< rows.length; i++){
@@ -207,5 +215,13 @@ function scrapeCourt(){
 var ONE_MINUTE = 1000*60;
 var FIVE_SECONDS = 1000*5;
 
-setInterval(scrapeCourt,ONE_MINUTE);
-scrapeCourt();
+dns.lookup('www.hmcourts-service.gov.uk',function(err,address){
+    if(err){
+        console.log('Could not resolve IP address');
+    }
+    else{
+        console.log('Resolved IP address: '+address);
+        setInterval(scrapeCourt,ONE_MINUTE,address);
+        scrapeCourt(address);  
+    }
+})

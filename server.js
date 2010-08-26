@@ -1,4 +1,4 @@
-var Connect = require('./lib/connect/lib/connect'),
+var connect = require('./lib/connect/lib/connect'),
     redisLib = require("./lib/redis-node-client/lib/redis-client"),
     http = require('http'),
     url = require('url');
@@ -52,12 +52,11 @@ function serveData(app){
     })
 }
 
-module.exports = Connect.createServer(
-    Connect.logger(),
-    Connect.responseTime(),
-    Connect.router(serveData),
-    // Connect.conditionalGet(),
-    Connect.staticProvider(__dirname + '/public'),
-    Connect.cache(),
-    Connect.gzip()
+module.exports = connect.createServer(
+    connect.logger(),
+    connect.router(serveData),
+    connect.conditionalGet(),
+    connect.staticProvider(__dirname + '/public'),
+    connect.cache(),
+    connect.gzip()
 );
